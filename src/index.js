@@ -5,6 +5,34 @@ import classnames from 'classnames';
 import "./index.scss";
 
 class SongVisualizer extends Component {
+  outOfBounds = (pos, r, limit) => {
+    let result = false;
+    
+    if ((pos + r) >= limit || (pos - r) <= 0) {
+      result = true;
+    }
+    
+    return result;
+  }
+  
+  max = arr => {
+    if (!arr.length) return null;
+
+    let max = arr[0];
+    
+    arr.forEach(el => {
+      if (el > max) {
+        max = el
+      }
+    });
+    
+    return max;
+  }
+  
+  randomBetween = (min, max) => {
+    return (Math.random() * max) - (Math.random() * min);
+  }
+  
   fileChange = e => {
     console.log('change *****---->>>');
     var audio = document.getElementById("audio");
@@ -36,34 +64,44 @@ class SongVisualizer extends Component {
 
     var WIDTH = canvas.width;
     var HEIGHT = canvas.height;
+    const speed = .5;
+    
+    let x = WIDTH/2;
+    let y = HEIGHT/2;
+    
+    let xDir = this.randomBetween(-1, 1) * speed;
+    let yDir = this.randomBetween(-1, 1) * speed;
+    
+    let frequency = 0;
+    const freqModifier = 10;
 
-    var barWidth = (WIDTH / bufferLength) * 2.5;
-    var barHeight;
-    var x = 0;
-
-    function renderFrame() {
+    const renderFrame = () => {
       requestAnimationFrame(renderFrame);
-
-      x = 0;
-
+      
       analyser.getByteFrequencyData(dataArray);
 
-      ctx.fillStyle = "#000";
-      ctx.fillRect(0, 0, WIDTH, HEIGHT);
-
-      for (var i = 0; i < bufferLength; i++) {
-        
-        barHeight = dataArray[i];
-        
-        var r = barHeight + (25 * (i/bufferLength));
-        var g = 250 * (i/bufferLength);
-        var b = 50;
-
-        ctx.fillStyle = "rgb(" + r + "," + g + "," + b + ")";
-        ctx.fillRect(x, HEIGHT - barHeight, barWidth, barHeight);
-
-        x += barWidth + 1;
+      ctx.clearRect(0, 0, WIDTH, HEIGHT);
+      
+      const max = this.max(dataArray);
+      frequency += (max - frequency) / freqModifier;
+      
+      ctx.beginPath();
+      ctx.arc(x, y, frequency, 0, 2 * Math.PI);
+      ctx.fillStyle = 'blue';
+      ctx.strokeStyle = 'lightblue';
+      
+      ctx.fill();
+      ctx.stroke();
+      
+      if (this.outOfBounds(y, frequency, HEIGHT)) {
+        yDir = yDir * -1;
+      } else if (this.outOfBounds(x, frequency, WIDTH)) {
+        xDir = xDir * -1;
       }
+      
+      x += xDir;
+      y += yDir;
+
     }
 
     audio.play();
