@@ -1,8 +1,8 @@
 {
-	"name": "react-visualizer",
+	"name": "react-song-visualizer",
 	"version": "1.0.0",
 	"description": "",
-	"main": "add-package-scripts.js",
+	"main": "index.js",
 	"scripts": {
 		"test": "echo \"Error: no test specified\" && exit 1",
 		"start": "webpack --watch",
@@ -26,6 +26,7 @@
 		"css-loader": "^2.1.1",
 		"mini-css-extract-plugin": "^0.6.0",
 		"node-sass": "^4.12.0",
+		"react-dom": "^16.8.6",
 		"sass-loader": "^7.1.0",
 		"style-loader": "^0.23.1",
 		"tar": "^4.4.8",
